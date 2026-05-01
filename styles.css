@@ -79,6 +79,7 @@ button:hover {
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
+/* HEADER */
 .header {
     display: grid;
     grid-template-columns: 1fr auto 1fr;
@@ -109,6 +110,7 @@ button:hover {
     filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.3));
 }
 
+/* RESPONSIVIDADE */
 @media (max-width: 900px) {
     #product-list {
         grid-template-columns: repeat(2, 1fr);
@@ -119,4 +121,19 @@ button:hover {
     #product-list {
         grid-template-columns: 1fr;
     }
+}
+
+/* DETALHES TEXTO */
+#product-details h3 {
+    color: #7b1e3a;
+    margin-top: 0;
+}
+
+#product-details p {
+    margin: 5px 0;
+    line-height: 1.4;
+}
+
+#product-details strong {
+    color: #7b1e3a;
 }

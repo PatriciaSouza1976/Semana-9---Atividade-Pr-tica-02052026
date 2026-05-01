@@ -1,4 +1,3 @@
-
 const data = {
     produtos: [
         {
@@ -76,36 +75,44 @@ const data = {
     ]
 };
 
-// ELEMENTOS DO DOM
+// Seleção de elementos do HTML
 const lista = document.getElementById("product-list");
-const detalhes = document.getElementById("product-details");
-const busca = document.querySelector("#search");
-const categoria = document.querySelector("#category");
-const botao = document.querySelector("#btnRender");
+const detalhesArea = document.getElementById("product-details");
+const botaoRender = document.getElementById("btnRender"); 
+const buscaInput = document.querySelector("#search");
+const categoriaSelect = document.querySelector("#category");
 
-// FORMATAR PREÇO
+// Formatação de moeda
 function formatPrice(valor) {
     return "R$ " + valor.toFixed(2);
 }
 
-// CRIAR CARD
-function createProductCard(produto) {
+// Exibe as informações detalhadas do vinho selecionado
+function showProductDetails(produto) {
+    detalhesArea.innerHTML = `
+        <h3>${produto.nome}</h3>
+        <p><strong>Preço:</strong> ${formatPrice(produto.preco)}</p>
+        <p><strong>Tipo:</strong> ${produto.categoria}</p>
+        <p><strong>Estoque:</strong> ${produto.emEstoque ? "Disponível" : "Indisponível"}</p>
+        <p><strong>Descrição:</strong> ${produto.descricao}</p>
+    `;
+}
 
+// Cria a estrutura visual de cada card de produto
+function createProductCard(produto) {
     const card = document.createElement("div");
     card.classList.add("card");
     card.setAttribute("data-id", produto.id);
 
-    // STYLE (OBRIGATÓRIO)
-    card.style.padding = "10px";
-    card.style.border = "1px solid #ccc";
-    card.style.backgroundColor = "#fff";
+    card.style.padding = "12px";
 
     const nome = document.createElement("h3");
     nome.textContent = produto.nome;
+    nome.classList.add("card-title");
 
     const img = document.createElement("img");
     img.src = produto.imagem;
-    img.style.width = "120px";
+    img.alt = produto.nome;
 
     const preco = document.createElement("p");
     preco.textContent = formatPrice(produto.preco);
@@ -113,23 +120,15 @@ function createProductCard(produto) {
     const cat = document.createElement("p");
     cat.textContent = "Categoria: " + produto.categoria;
 
-    const estoque = document.createElement("p");
-    estoque.textContent = produto.emEstoque ? "Disponível" : "Indisponível";
-
     const btnDetalhes = document.createElement("button");
     btnDetalhes.textContent = "Ver detalhes";
-
-    btnDetalhes.addEventListener("click", function () {
-        detalhes.innerHTML =
-            "<h3>" + produto.nome + "</h3>" +
-            "<p>" + formatPrice(produto.preco) + "</p>" +
-            "<p>" + produto.descricao + "</p>";
+    btnDetalhes.addEventListener("click", function() {
+        showProductDetails(produto);
     });
 
     const btnDestacar = document.createElement("button");
     btnDestacar.textContent = "Destacar";
-
-    btnDestacar.addEventListener("click", function () {
+    btnDestacar.addEventListener("click", function() {
         card.classList.toggle("destaque");
     });
 
@@ -137,77 +136,68 @@ function createProductCard(produto) {
     card.appendChild(img);
     card.appendChild(preco);
     card.appendChild(cat);
-    card.appendChild(estoque);
     card.appendChild(btnDetalhes);
     card.appendChild(btnDestacar);
 
     return card;
 }
 
-// RENDER PRODUTOS
-function renderProducts(listaProdutos) {
+// Renderiza a lista de produtos na tela
+function renderProducts(listaFiltrada) {
+    lista.innerHTML = ""; 
 
-    lista.innerHTML = "";
-
-    listaProdutos.forEach(function (p) {
-        const card = createProductCard(p);
-        lista.appendChild(card);
+    listaFiltrada.forEach(function(p) {
+        const cardPronto = createProductCard(p);
+        lista.appendChild(cardPronto);
     });
 
-    // ✔ querySelectorAll (AGORA NO LUGAR CERTO)
-    const cards = document.querySelectorAll(".card");
-
-    cards.forEach(function (c) {
-        console.log("ID do card:", c.getAttribute("data-id"));
+    const cardsCriados = document.querySelectorAll(".card");
+    cardsCriados.forEach(function(c) {
+        console.log("Card renderizado - ID:", c.getAttribute("data-id"));
     });
 }
 
-// CATEGORIAS
+// Gera categorias
 function renderCategories() {
-
-    categoria.innerHTML = "<option value='todas'>Todas</option>";
-
-    const listaCats = [];
-
-    data.produtos.forEach(function (p) {
-        if (!listaCats.includes(p.categoria)) {
-            listaCats.push(p.categoria);
+    categoriaSelect.innerHTML = "<option value='todas'>Todas</option>";
+    
+    let nomesCategorias = [];
+    data.produtos.forEach(function(p) {
+        if (!nomesCategorias.includes(p.categoria)) {
+            nomesCategorias.push(p.categoria);
         }
     });
 
-    listaCats.forEach(function (c) {
+    nomesCategorias.forEach(function(cat) {
         const opt = document.createElement("option");
-        opt.value = c;
-        opt.textContent = c;
-        categoria.appendChild(opt);
+        opt.value = cat;
+        opt.textContent = cat;
+        categoriaSelect.appendChild(opt);
     });
 }
 
-// FILTRO
+// 🔴 CORREÇÃO AQUI (mínima, sem mudar lógica)
 function filterProducts() {
+    const texto = buscaInput.value.toLowerCase().trim();
+    const filtroCat = categoriaSelect.value.toLowerCase().trim();
 
-    const texto = busca.value.toLowerCase();
-    const cat = categoria.value;
-
-    const filtrados = data.produtos.filter(function (p) {
-
+    const filtrados = data.produtos.filter(function(p) {
         const nomeOk = p.nome.toLowerCase().includes(texto);
-        const catOk = (cat === "todas" || p.categoria === cat);
-
+        const catOk = (filtroCat === "todas" || p.categoria.toLowerCase() === filtroCat);
         return nomeOk && catOk;
     });
 
     renderProducts(filtrados);
 }
 
-// EVENTOS
-botao.addEventListener("click", function () {
+// Eventos
+botaoRender.addEventListener("click", function() {
     renderProducts(data.produtos);
 });
 
-busca.addEventListener("input", filterProducts);
-categoria.addEventListener("change", filterProducts);
+buscaInput.addEventListener("input", filterProducts);
+categoriaSelect.addEventListener("change", filterProducts);
 
-// INICIALIZAÇÃO
+// Inicialização
 renderCategories();
 renderProducts(data.produtos);
