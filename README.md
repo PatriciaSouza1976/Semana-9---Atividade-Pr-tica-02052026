@@ -24,4 +24,4 @@ Catálogo de Vinhos (tela principal)
 ![Catálogo de Vinhos](prints/catalogodevinhos.png)
 
 Console 
-![Console do navegador](prints/console.png)
+![Console do navegador](prints/console)
