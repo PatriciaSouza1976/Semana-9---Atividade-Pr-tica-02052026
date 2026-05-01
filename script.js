@@ -1,4 +1,4 @@
-// 1. DADOS (JSON)
+
 const data = {
     produtos: [
         {
@@ -7,7 +7,7 @@ const data = {
             preco: 39.90,
             categoria: "Tinto",
             imagem: "imagens/tintosuave.png",
-            descricao: "Vinho tinto leve e fácil de beber.",
+            descricao: "Leve e fácil de beber",
             emEstoque: true
         },
         {
@@ -16,7 +16,7 @@ const data = {
             preco: 59.90,
             categoria: "Tinto",
             imagem: "imagens/tintoseco.png",
-            descricao: "Vinho tinto mais encorpado.",
+            descricao: "Mais encorpado e intenso",
             emEstoque: true
         },
         {
@@ -25,7 +25,7 @@ const data = {
             preco: 45.00,
             categoria: "Branco",
             imagem: "imagens/brancosuave.png",
-            descricao: "Vinho branco leve e refrescante.",
+            descricao: "Refrescante e leve",
             emEstoque: true
         },
         {
@@ -34,7 +34,7 @@ const data = {
             preco: 52.00,
             categoria: "Branco",
             imagem: "imagens/brancoseco.png",
-            descricao: "Vinho branco seco.",
+            descricao: "Seco e equilibrado",
             emEstoque: false
         },
         {
@@ -43,7 +43,7 @@ const data = {
             preco: 48.90,
             categoria: "Rosé",
             imagem: "imagens/rosesuave.png",
-            descricao: "Vinho rosé leve e delicado.",
+            descricao: "Leve e aromático",
             emEstoque: true
         },
         {
@@ -52,7 +52,7 @@ const data = {
             preco: 55.90,
             categoria: "Rosé",
             imagem: "imagens/roseseco.png",
-            descricao: "Rosé com sabor marcante.",
+            descricao: "Sabor mais intenso",
             emEstoque: true
         },
         {
@@ -61,43 +61,44 @@ const data = {
             preco: 69.90,
             categoria: "Espumante",
             imagem: "imagens/espumantebrut.png",
-            descricao: "Espumante ideal para festas.",
+            descricao: "Ideal para festas",
             emEstoque: true
         },
         {
             id: 8,
-            nome: "Espumante moscatel",
+            nome: "Espumante Moscatel",
             preco: 64.90,
             categoria: "Espumante",
             imagem: "imagens/espumantemoscatel.png",
-            descricao: "Espumante mais doce.",
+            descricao: "Mais doce e suave",
             emEstoque: false
         }
     ]
 };
 
-// 2. DOM
+// ELEMENTOS DO DOM
 const lista = document.getElementById("product-list");
 const detalhes = document.getElementById("product-details");
 const busca = document.querySelector("#search");
 const categoria = document.querySelector("#category");
 const botao = document.querySelector("#btnRender");
 
-// 3. FORMATAR PREÇO
-function formatPrice(preco) {
-    return "R$ " + preco.toFixed(2);
+// FORMATAR PREÇO
+function formatPrice(valor) {
+    return "R$ " + valor.toFixed(2);
 }
 
-// 4. CRIAR CARD
+// CRIAR CARD
 function createProductCard(produto) {
 
     const card = document.createElement("div");
     card.classList.add("card");
     card.setAttribute("data-id", produto.id);
 
-    card.style.border = "1px solid #000";
+    // STYLE (OBRIGATÓRIO)
     card.style.padding = "10px";
-    card.style.margin = "10px";
+    card.style.border = "1px solid #ccc";
+    card.style.backgroundColor = "#fff";
 
     const nome = document.createElement("h3");
     nome.textContent = produto.nome;
@@ -119,13 +120,16 @@ function createProductCard(produto) {
     btnDetalhes.textContent = "Ver detalhes";
 
     btnDetalhes.addEventListener("click", function () {
-        showProductDetails(produto);
+        detalhes.innerHTML =
+            "<h3>" + produto.nome + "</h3>" +
+            "<p>" + formatPrice(produto.preco) + "</p>" +
+            "<p>" + produto.descricao + "</p>";
     });
 
-    const btnDestaque = document.createElement("button");
-    btnDestaque.textContent = "Destacar";
+    const btnDestacar = document.createElement("button");
+    btnDestacar.textContent = "Destacar";
 
-    btnDestaque.addEventListener("click", function () {
+    btnDestacar.addEventListener("click", function () {
         card.classList.toggle("destaque");
     });
 
@@ -135,65 +139,60 @@ function createProductCard(produto) {
     card.appendChild(cat);
     card.appendChild(estoque);
     card.appendChild(btnDetalhes);
-    card.appendChild(btnDestaque);
+    card.appendChild(btnDestacar);
 
     return card;
 }
 
-// 5. RENDER PRODUTOS
-function renderProducts(produtos) {
+// RENDER PRODUTOS
+function renderProducts(listaProdutos) {
 
     lista.innerHTML = "";
 
-    produtos.forEach(function (produto) {
-        const card = createProductCard(produto);
+    listaProdutos.forEach(function (p) {
+        const card = createProductCard(p);
         lista.appendChild(card);
+    });
+
+    // ✔ querySelectorAll (AGORA NO LUGAR CERTO)
+    const cards = document.querySelectorAll(".card");
+
+    cards.forEach(function (c) {
+        console.log("ID do card:", c.getAttribute("data-id"));
     });
 }
 
-// 6. CATEGORIAS
+// CATEGORIAS
 function renderCategories() {
 
-    categoria.innerHTML = '<option value="todas">Todas</option>';
+    categoria.innerHTML = "<option value='todas'>Todas</option>";
 
-    const cats = [];
+    const listaCats = [];
 
     data.produtos.forEach(function (p) {
-        if (!cats.includes(p.categoria)) {
-            cats.push(p.categoria);
+        if (!listaCats.includes(p.categoria)) {
+            listaCats.push(p.categoria);
         }
     });
 
-    cats.forEach(function (c) {
-        const option = document.createElement("option");
-        option.value = c;
-        option.textContent = c;
-        categoria.appendChild(option);
+    listaCats.forEach(function (c) {
+        const opt = document.createElement("option");
+        opt.value = c;
+        opt.textContent = c;
+        categoria.appendChild(opt);
     });
 }
 
-// 7. DETALHES
-function showProductDetails(produto) {
-
-    detalhes.innerHTML = `
-        <h3>${produto.nome}</h3>
-        <p>Preço: ${formatPrice(produto.preco)}</p>
-        <p>Categoria: ${produto.categoria}</p>
-        <p>Estoque: ${produto.emEstoque ? "Disponível" : "Indisponível"}</p>
-        <p>${produto.descricao}</p>
-    `;
-}
-
-// 8. FILTRO
+// FILTRO
 function filterProducts() {
 
     const texto = busca.value.toLowerCase();
     const cat = categoria.value;
 
-    const filtrados = data.produtos.filter(function (produto) {
+    const filtrados = data.produtos.filter(function (p) {
 
-        const nomeOk = produto.nome.toLowerCase().includes(texto);
-        const catOk = (cat === "todas" || produto.categoria === cat);
+        const nomeOk = p.nome.toLowerCase().includes(texto);
+        const catOk = (cat === "todas" || p.categoria === cat);
 
         return nomeOk && catOk;
     });
@@ -201,7 +200,7 @@ function filterProducts() {
     renderProducts(filtrados);
 }
 
-// 9. EVENTOS
+// EVENTOS
 botao.addEventListener("click", function () {
     renderProducts(data.produtos);
 });
@@ -209,8 +208,6 @@ botao.addEventListener("click", function () {
 busca.addEventListener("input", filterProducts);
 categoria.addEventListener("change", filterProducts);
 
-// 10. INICIALIZAÇÃO
+// INICIALIZAÇÃO
 renderCategories();
 renderProducts(data.produtos);
-
-console.log("JS rodando");
