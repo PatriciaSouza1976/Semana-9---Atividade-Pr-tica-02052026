@@ -21,7 +21,7 @@ Git e GitHub para controle de versão
 Prints do projeto
 
 Catálogo de Vinhos (tela principal)
-![Catálogo de Vinhos](./catalogodevinhos.png)
+![Catálogo de Vinhos](./prints/catalogodevinhos.png)
 
 Console do navegador
-![Console do navegador](./console.png)
+![Console do navegador](./prints/console.png)
